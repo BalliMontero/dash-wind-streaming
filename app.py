@@ -12,10 +12,11 @@ import os
 import sqlite3
 import datetime as dt
 server = Flask('my app')
-server.secret_key = os.environ.get('secret_key', 'secret')
+# server.secret_key = os.environ.get('secret_key', 'secret')
 
-app = dash.Dash('streaming-wind-app', server=server,
-                url_base_pathname='/dash/gallery/live-wind-data/')
+# app = dash.Dash('streaming-wind-app', server=server,
+#                 url_base_pathname='/dash/gallery/live-wind-data/')
+app = dash.Dash()
 
 app.layout = html.Div([
     html.Div([
@@ -43,7 +44,7 @@ app.layout = html.Div([
                     max=60,
                     step=1,
                     value=20,
-                    updatemode='drag'
+                  #  updatemode='drag'
                 ),
             ], className='histogram-slider'),
             html.P('# of Bins: Auto', id='bin-size', className='bin-size'),
@@ -81,7 +82,7 @@ def gen_wind_speed():
 
     total_time = (hour * 3600) + (minute * 60) + (sec)
 
-    con = sqlite3.connect("wind-data.db")
+    con = sqlite3.connect("data/wind-data.db")
     df = pd.read_sql_query('SELECT Speed, SpeedError, Direction from Wind where\
                             rowid > "{}" AND rowid <= "{}";'
                             .format(total_time-200, total_time), con)
@@ -365,4 +366,4 @@ if 'DYNO' in os.environ:
     })
 
 if __name__ == '__main__':
-    app.run_server()
+    app.run_server(port=8101)
